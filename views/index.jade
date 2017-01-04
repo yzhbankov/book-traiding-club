@@ -1,0 +1,63 @@
+//
+   Created by Владелец on 21.12.2016.
+
+doctype html
+html
+    head
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    script(src="https://code.jquery.com/jquery-3.1.0.js")
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css")
+    link(rel="stylesheet" href="css/foundation.min.css")
+    link(rel="stylesheet" href="css/bootstrap-social.css")
+    link(rel="stylesheet" href="css/style.css")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous")
+    link(href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+    integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous")
+    title Book club
+body
+
+    div.menu
+        nav.navbar.navbar-inverse.navbar-fixed-top
+            div.container
+                div.navbar-header
+                    button(type="button" data-toggle="collapse" data-target="#myNavbar").navbar-toggle
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+                a(href="/").navbar-brand
+                    strong Home
+                div.collapse.navbar-collapse
+                    ul.nav.navbar-nav.navbar-right
+                        li.signup-btn
+                            a(href="/dashboard") Dashboard
+                        li.signup-btn
+                            a(href="/signup") Sign up
+                        li.logint-btn
+                            a(href="/signin") Signin
+                        li.settings-btn
+                            a(href="/settings") Settings
+                        li.logout-btn
+                            a(href="/logout") Logout
+div.board
+    div.title BookStock
+    div Spread The Knowledge
+block content
+
+div.footer
+    div.buttons.row
+        div.col-md-3
+            a(href="https://www.facebook.com/profile.php?id=100008521293655").btn.btn-social-icon.btn-sm.btn-facebook
+                span.fa.fa-facebook
+        div.col-md-3
+            a(href="https://github.com/yzhbankov").btn.btn-social-icon.btn-sm.btn-github
+                span.fa.fa-github
+        div.col-md-3
+            a(href="https://github.com/yzhbankov").btn.btn-social-icon.btn-sm.btn-linkedin
+                span.fa.fa-linkedin
+        div.col-md-3
+            a(href="https://plus.google.com/102236888586852159908").btn.btn-social-icon.btn-sm.btn-google
+                span.fa.fa-google
+
