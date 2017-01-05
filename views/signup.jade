@@ -1,0 +1,25 @@
+//
+   Created by Владелец on 20.12.2016.
+doctype html
+extends ./index.jade
+
+block append content
+    div.container.signup
+        h2.signup-title Sign Up
+        form(action="/signup" method="POST")
+            div.form-group
+                label(for="user") User name:
+                input(type="text" name="user").form-control#user
+            div.form-group
+                label(for="email") Email:
+                input(type="email" name="email").form-control#email
+            div.form-group
+                label(for="city") City:
+                input(type="text" name="city").form-control#city
+            div.form-group
+                label(for="state") State/Region/Province:
+                input(type="text" name="state").form-control#state
+            div.form-group
+                label(for="pwd") Password:
+                input(type="password" name="password").form-control#pwd
+            button.btn.btn-default(type="submit") Submit
