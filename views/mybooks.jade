@@ -1,0 +1,21 @@
+//
+   Created by Владелец on 24.12.2016.
+
+doctype html
+extends ./index.jade
+block append content
+   div.container.signup
+      h2 User: #{title}
+      //h2 Polls: #{polls}
+   div.options-submit
+         - if (books.length)
+         -for (var i = 0; i < books.length; i++)
+            div
+               img(src= books[i])
+               a(href="/book/delete/"+books_titles[i])
+                  button.btn.btn-default Delete
+    form(action="/add" method="POST")
+        div.form-group
+            label(for="title") Title:
+            input(type="text" name="title").form-control#title
+        button.btn.btn-default(type="submit") Add

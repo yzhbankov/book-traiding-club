@@ -8,7 +8,7 @@ var MongoClient = require('mongodb').MongoClient;
 //var url = 'mongodb://yzhbankov:password1360@ds145208.mlab.com:45208/heroku_8k6sbvf2';
 var url = 'mongodb://localhost:27017/book_club';
 var session = require('express-session');
-
+var https = require('https');
 
 app.use("/", express.static('public'));
 app.use("/dashboard", express.static('public'));
@@ -111,10 +111,91 @@ app.post('/settings', function (req, res) {
     }
 });
 
-app.get('/logout', function(req, res){
+app.get('/logout', function (req, res) {
     req.session.destroy();
     console.log("session ends");
     res.redirect('/');
+});
+
+app.get('/mybooks', function (req, res) {
+    if (!req.session.user) {
+        res.redirect('/');
+    } else {
+        MongoClient.connect(url, function (err, db) {
+            var resent = db.collection('books').find({"username": req.session.user}, {
+                'username': true,
+                "title": true,
+                'cover_img': true
+            }).toArray(function (err, result) {
+                if (result.length < 1) {
+                    res.render('mybooks.jade', {"title": req.session.user, "books": []});
+                } else {
+                    var books = [];
+                    var books_titles = [];
+                    for (var i = 0; i < result.length; i++) {
+                        books.push(result[i].cover_img);
+                        books_titles.push(result[i].title);
+                    }
+                    res.render('mybooks.jade', {
+                        "title": result[0].username,
+                        "books": books,
+                        "books_titles": books_titles
+                    });
+                }
+            });
+
+            db.close();
+        });
+    }
+});
+
+app.post('/add', function (req, res) {
+    var booksData = '';
+    var options = {
+        hostname: 'www.googleapis.com',
+        path: '/books/v1/volumes?q=search+' + req.body.title,
+        method: 'GET'
+    };
+
+    var request = https.request(options, function (response) {
+        console.log('statusCode:', response.statusCode);
+        console.log('headers:', response.headers);
+        response.setEncoding('utf8');
+        response.on('data', function (d) {
+            booksData += d;
+
+        });
+        response.on('end', function () {
+            console.log(JSON.parse(booksData));
+            var cover_img = JSON.parse(booksData)['items'][0]['volumeInfo']['imageLinks']['thumbnail'];
+            
+        });
+    });
+
+    request.on('error', function (e) {
+        console.error(e);
+    });
+    request.end();
+
+    res.send(null);
+
+    /*MongoClient.connect(url, function (err, db) {
+     db.collection('books').findOne({"pollname": req.params.pollname}, function (err, item) {
+     var newoptions = dataTransorm.setSize(item.options, req.body.name);
+     db.collection('polls').update({"pollname": req.params.pollname},
+     {"$set": {"options": newoptions}}, function (err, doc) {
+     var username = item.username;
+     var options = newoptions;
+     db.close();
+     res.render('poll.jade', {
+     title: req.params.pollname,
+     username: username,
+     optionsSize: dataTransorm.getSize(options),
+     optionsName: dataTransorm.getName({})
+     });
+     });
+     });
+     });*/
 });
 
 app.listen(process.env.PORT || 3000, function () {
