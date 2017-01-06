@@ -128,8 +128,10 @@ app.get('/mybooks', function (req, res) {
                 'cover_img': true
             }).toArray(function (err, result) {
                 if (result.length < 1) {
+                    console.log('no books found');
                     res.render('mybooks.jade', {"title": req.session.user, "books": []});
                 } else {
+                    console.log('books found');
                     var books = [];
                     var books_titles = [];
                     for (var i = 0; i < result.length; i++) {
@@ -163,12 +165,31 @@ app.post('/add', function (req, res) {
         response.setEncoding('utf8');
         response.on('data', function (d) {
             booksData += d;
-
         });
         response.on('end', function () {
-            console.log(JSON.parse(booksData));
             var cover_img = JSON.parse(booksData)['items'][0]['volumeInfo']['imageLinks']['thumbnail'];
-            
+            MongoClient.connect(url, function (err, db) {
+                db.collection('books').findOne({
+                    "username": req.session.user,
+                    "title": req.body.title
+                }, function (err, item) {
+                    if (item) {
+                        db.close();
+                        console.log("book already exist");
+                    } else {
+                        db.collection('books').insertOne({
+                            "username": req.session.user,
+                            "title": req.body.title,
+                            "cover_img": cover_img
+                        }, function (err, result) {
+                            if (!err) {
+                                console.log("book added successfuly");
+                            }
+                        });
+                        db.close();
+                    }
+                });
+            });
         });
     });
 
@@ -177,25 +198,9 @@ app.post('/add', function (req, res) {
     });
     request.end();
 
-    res.send(null);
+    res.redirect('/mybooks');
 
-    /*MongoClient.connect(url, function (err, db) {
-     db.collection('books').findOne({"pollname": req.params.pollname}, function (err, item) {
-     var newoptions = dataTransorm.setSize(item.options, req.body.name);
-     db.collection('polls').update({"pollname": req.params.pollname},
-     {"$set": {"options": newoptions}}, function (err, doc) {
-     var username = item.username;
-     var options = newoptions;
-     db.close();
-     res.render('poll.jade', {
-     title: req.params.pollname,
-     username: username,
-     optionsSize: dataTransorm.getSize(options),
-     optionsName: dataTransorm.getName({})
-     });
-     });
-     });
-     });*/
+
 });
 
 app.listen(process.env.PORT || 3000, function () {
