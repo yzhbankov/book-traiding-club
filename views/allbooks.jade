@@ -11,3 +11,5 @@ block append content
          -for (var i = 0; i < books.length; i++)
             div.col-md-2
                img(src= books[i])
+               - if (books_owners[i]!=current_user)
+                    button.btn.btn-default trade

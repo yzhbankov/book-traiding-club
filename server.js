@@ -152,31 +152,39 @@ app.get('/mybooks', function (req, res) {
 });
 
 app.get('/allbooks', function (req, res) {
-    MongoClient.connect(url, function (err, db) {
-        var resent = db.collection('books').find({}, {
-            'username': true,
-            "title": true,
-            'cover_img': true
-        }).toArray(function (err, result) {
-            if (result.length < 1) {
-                console.log('no books found');
-                res.render('allbooks.jade', {"books": []});
-            } else {
-                console.log('books found');
-                var books = [];
-                var books_titles = [];
-                for (var i = 0; i < result.length; i++) {
-                    books.push(result[i].cover_img);
-                    books_titles.push(result[i].title);
+    if (!req.session.user) {
+        res.redirect('/');
+    } else {
+        MongoClient.connect(url, function (err, db) {
+            var resent = db.collection('books').find({}, {
+                'username': true,
+                "title": true,
+                'cover_img': true
+            }).toArray(function (err, result) {
+                if (result.length < 1) {
+                    console.log('no books found');
+                    res.render('allbooks.jade', {"books": []});
+                } else {
+                    console.log('books found');
+                    var books = [];
+                    var books_titles = [];
+                    var books_owner = [];
+                    for (var i = 0; i < result.length; i++) {
+                        books.push(result[i].cover_img);
+                        books_titles.push(result[i].title);
+                        books_owner.push(result[i].username);
+                    }
+                    res.render('allbooks.jade', {
+                        "books": books,
+                        "books_titles": books_titles,
+                        "books_owners": books_owner,
+                        "current_user": req.session.user
+                    });
                 }
-                res.render('allbooks.jade', {
-                    "books": books,
-                    "books_titles": books_titles
-                });
-            }
+            });
+            db.close();
         });
-        db.close();
-    });
+    }
 });
 
 app.post('/add', function (req, res) {
