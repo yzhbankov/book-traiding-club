@@ -1,0 +1,13 @@
+//
+   Created by Владелец on 24.12.2016.
+
+doctype html
+extends ./index.jade
+block append content
+   div.container.signup
+      h2 All books
+   div.options-submit.row
+         - if (books.length)
+         -for (var i = 0; i < books.length; i++)
+            div.col-md-2
+               img(src= books[i])

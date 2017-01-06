@@ -151,17 +151,43 @@ app.get('/mybooks', function (req, res) {
     }
 });
 
+app.get('/allbooks', function (req, res) {
+    MongoClient.connect(url, function (err, db) {
+        var resent = db.collection('books').find({}, {
+            'username': true,
+            "title": true,
+            'cover_img': true
+        }).toArray(function (err, result) {
+            if (result.length < 1) {
+                console.log('no books found');
+                res.render('allbooks.jade', {"books": []});
+            } else {
+                console.log('books found');
+                var books = [];
+                var books_titles = [];
+                for (var i = 0; i < result.length; i++) {
+                    books.push(result[i].cover_img);
+                    books_titles.push(result[i].title);
+                }
+                res.render('allbooks.jade', {
+                    "books": books,
+                    "books_titles": books_titles
+                });
+            }
+        });
+        db.close();
+    });
+});
+
 app.post('/add', function (req, res) {
     var booksData = '';
     var options = {
         hostname: 'www.googleapis.com',
-        path: '/books/v1/volumes?q=search+' + req.body.title,
+        path: encodeURI('/books/v1/volumes?q=search+' + req.body.title),
         method: 'GET'
     };
 
     var request = https.request(options, function (response) {
-        console.log('statusCode:', response.statusCode);
-        console.log('headers:', response.headers);
         response.setEncoding('utf8');
         response.on('data', function (d) {
             booksData += d;
