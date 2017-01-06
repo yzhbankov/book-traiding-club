@@ -229,6 +229,17 @@ app.post('/add', function (req, res) {
 
 });
 
+app.get('/delete/:booktitle', function (req, res) {
+    if (!req.session.user) {
+        res.redirect('/');
+    }
+    MongoClient.connect(url, function (err, db) {
+        db.collection('books').remove({"username": req.session.user, "title": req.params.booktitle});
+        db.close();
+        res.redirect('/mybooks');
+    });
+});
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('Listening port 3000');
 });
