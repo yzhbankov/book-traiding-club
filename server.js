@@ -19,7 +19,11 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 
 app.get('/', function (req, res) {
-    res.render('index.jade', {});
+    if (!req.session.user) {
+        res.render('layout.jade', {});
+    } else {
+        res.render('layout.jade', {"user": req.session.user});
+    }
 });
 
 app.get('/signup', function (req, res) {
@@ -188,52 +192,55 @@ app.get('/allbooks', function (req, res) {
 });
 
 app.post('/add', function (req, res) {
-    var booksData = '';
-    var options = {
-        hostname: 'www.googleapis.com',
-        path: encodeURI('/books/v1/volumes?q=search+' + req.body.title),
-        method: 'GET'
-    };
+    if (!req.body.title) {
+        res.redirect('/mybooks');
+    } else {
+        var booksData = '';
+        var options = {
+            hostname: 'www.googleapis.com',
+            path: encodeURI('/books/v1/volumes?q=search+' + req.body.title),
+            method: 'GET'
+        };
 
-    var request = https.request(options, function (response) {
-        response.setEncoding('utf8');
-        response.on('data', function (d) {
-            booksData += d;
-        });
-        response.on('end', function () {
-            var cover_img = JSON.parse(booksData)['items'][0]['volumeInfo']['imageLinks']['thumbnail'];
-            MongoClient.connect(url, function (err, db) {
-                db.collection('books').findOne({
-                    "username": req.session.user,
-                    "title": req.body.title
-                }, function (err, item) {
-                    if (item) {
-                        db.close();
-                        console.log("book already exist");
-                    } else {
-                        db.collection('books').insertOne({
-                            "username": req.session.user,
-                            "title": req.body.title,
-                            "cover_img": cover_img
-                        }, function (err, result) {
-                            if (!err) {
-                                console.log("book added successfuly");
-                            }
-                        });
-                        db.close();
-                    }
+        var request = https.request(options, function (response) {
+            response.setEncoding('utf8');
+            response.on('data', function (d) {
+                booksData += d;
+            });
+            response.on('end', function () {
+                var cover_img = JSON.parse(booksData)['items'][0]['volumeInfo']['imageLinks']['thumbnail'];
+                MongoClient.connect(url, function (err, db) {
+                    db.collection('books').findOne({
+                        "username": req.session.user,
+                        "title": req.body.title
+                    }, function (err, item) {
+                        if (item) {
+                            db.close();
+                            console.log("book already exist");
+                        } else {
+                            db.collection('books').insertOne({
+                                "username": req.session.user,
+                                "title": req.body.title,
+                                "cover_img": cover_img
+                            }, function (err, result) {
+                                if (!err) {
+                                    console.log("book added successfuly");
+                                }
+                            });
+                            db.close();
+                        }
+                    });
                 });
             });
         });
-    });
 
-    request.on('error', function (e) {
-        console.error(e);
-    });
-    request.end();
+        request.on('error', function (e) {
+            console.error(e);
+        });
+        request.end();
 
-    res.redirect('/mybooks');
-
+        res.redirect('/mybooks');
+    }
 
 });
 
@@ -309,7 +316,7 @@ app.get('/gettradeinfo/:from', function (req, res) {
                 res.render('mytrades.jade', {
                     "tradesTo": tradesTo,
                     "titles": titles,
-                    "approve":approve
+                    "approve": approve
                 });
             }
         });
@@ -341,10 +348,10 @@ app.get('/gettraderequestinfo/:to', function (req, res) {
                     approve.push(result[i].approve);
                 }
                 res.render('anothertrades.jade', {
-                    "user":user,
+                    "user": user,
                     "tradesFrom": tradesFrom,
                     "titles": titles,
-                    "approve":approve
+                    "approve": approve
                 });
             }
         });
@@ -352,35 +359,35 @@ app.get('/gettraderequestinfo/:to', function (req, res) {
     });
 });
 
-app.get('/deletetrade/:title/:to', function(req, res){
+app.get('/deletetrade/:title/:to', function (req, res) {
     var title = req.params.title;
-    var user = req. session.user;
+    var user = req.session.user;
     var to = req.params.to;
     MongoClient.connect(url, function (err, db) {
-        db.collection('trades').remove({"from": user, "to": to, "title":title});
+        db.collection('trades').remove({"from": user, "to": to, "title": title});
         db.close();
         res.redirect('/gettradeinfo/' + user);
     });
 });
 
-app.get('/deleteanothertrade/:title/:from', function(req, res){
+app.get('/deleteanothertrade/:title/:from', function (req, res) {
     var title = req.params.title;
-    var user = req. session.user;
+    var user = req.session.user;
     var from = req.params.from;
     MongoClient.connect(url, function (err, db) {
-        db.collection('trades').remove({"from": from, "to": user, "title":title});
+        db.collection('trades').remove({"from": from, "to": user, "title": title});
         db.close();
         res.redirect('/gettraderequestinfo/' + user);
     });
 });
 
-app.get('/approvetrade/:title/:from/:to', function(req, res){
+app.get('/approvetrade/:title/:from/:to', function (req, res) {
     var title = req.params.title;
     var from = req.params.from;
     var to = req.params.to;
 
     MongoClient.connect(url, function (err, db) {
-        db.collection('trades').update({"from": from, "to":to, "title": title},
+        db.collection('trades').update({"from": from, "to": to, "title": title},
             {"$set": {"approve": true}}, function (err, doc) {
                 res.redirect('/gettraderequestinfo/' + req.session.user);
                 db.close();

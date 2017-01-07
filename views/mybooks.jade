@@ -6,24 +6,32 @@ extends ./index.jade
 block append content
    div.container.signup
       h2 User: #{title}
-      //h2 Polls: #{polls}
-    a(href='/gettradeinfo/'+title)
-        button.btn.btn-default.yourTradeRequest Your trade requests
-    a(href='/gettraderequestinfo/'+title)
-        button.btn.btn-default.tradeRequestFor Trade requests for you
+    div.center
+        a(href='/gettradeinfo/'+title)
+            button.btn.btn-primary.tradeRequest Your trade requests
+        a(href='/gettraderequestinfo/'+title)
+            button.btn.btn-success.tradeRequest Trade requests for you
 
-    div.tradeContainer
-    form(action="/add" method="POST")
-        div.form-group
-            label(for="title") Title:
-            input(type="text" name="title").form-control#title
-        button.btn.btn-default(type="submit") Add
-   div.options-submit.row
+    div.tradeContainer.container
+            div.col-md-3
+            form(action="/add" method="POST")
+                div.form-group.row
+                    div.col-md-1
+                        label(for="title") Title:
+                    div.col-md-4
+                        input(type="text" name="title").form-control#title
+                    div.col-md-1
+                        button.btn.btn-default.reload(type="submit") Add
+    hr
+   div.container.center
          - if (books.length)
          -for (var i = 0; i < books.length; i++)
-            div.col-md-2
-               img(src= books[i])
-               a(href="/delete/"+books_titles[i])
-                  button.btn.btn-default Delete
+            div.book
+               div
+                img(src= books[i])
+               div
+                a(href="/delete/"+books_titles[i])
+                  button.btn.btn-default.reload Delete
 
-
+    hr
+script(src="js/reload.js" type='text/javascript')

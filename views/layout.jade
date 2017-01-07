@@ -1,0 +1,19 @@
+//
+   Created by Владелец on 24.12.2016.
+doctype html
+extends ./index.jade
+block append content
+    -if(user)
+        h2(style="text-align:center; margin-top:20px") Welcome #{user}!
+    div.section-title Features:
+    hr
+    div.features.container
+        div.col-md-4
+            button.btn.btn-default.features Catalogue your books online
+        div.col-md-4
+            button.btn.btn-default.features See all books our users own
+        div.col-md-4
+            button.btn.btn-default.features Request to borrow other users books
+
+    hr
+    include ./footer.jade

@@ -4,14 +4,28 @@
 doctype html
 extends ./index.jade
 block append content
-    h2 Your trades
-    div.container.signup
-       div.options-submit.row
-             - if (tradesTo.length)
-             -for (var i = 0; i < tradesTo.length; i++)
-                div.col-md-2=titles[i]
-                a(href="/deletetrade/"+titles[i]+'/'+tradesTo[i])
-                    button.btn.btn-default.delete Delete
+    hr
+    h2.center Your trade requests
+    hr
+    div
+        div.row
+            div.col-md-4
+                strong Book title
+            div.col-md-4
+                strong Action
+            div.col-md-4
+                strong Status
+        hr
+        - if (tradesTo.length)
+        -for (var i = 0; i < tradesTo.length; i++)
+            div.trades.row
+                div.col-md-4=titles[i]
+                div.col-md-4
+                    a(href="/deletetrade/" + titles[i] + '/' + tradesTo[i])
+                        button.btn.btn-default.reload Delete request
+                div.col-md-4
                 - if (approve[i])
-                    div approved
-script(src="js/tradeDelete.js" type='text/javascript')
+                    span approved by #{tradesTo[i]}
+            hr
+
+script(src="js/reload.js" type='text/javascript')

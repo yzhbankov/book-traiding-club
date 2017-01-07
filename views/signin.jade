@@ -7,10 +7,10 @@ block append content
    div.container.signup
       h2.signup-title Signin
       form(action="/signin" method="POST")
-         div.form-group
+         div.form-group.signinfield
             label(for="user") User name:
             input(type="user" name="user").form-control#user
-         div.form-group
+         div.form-group.signinfield
             label(for="pwd") Password:
             input(type="password" name='password').form-control#pwd
          button.btn.btn-default(type="submit") Submit

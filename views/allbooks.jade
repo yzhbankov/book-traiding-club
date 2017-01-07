@@ -4,15 +4,15 @@
 doctype html
 extends ./index.jade
 block append content
-   div.container.signup
-      h2 All books
-   div.options-submit.row
-         - if (books.length)
-         -for (var i = 0; i < books.length; i++)
-            div.col-md-2
-               img(src= books[i])
-               - if (books_owners[i]!=current_user)
-                    a(href='/trade/'+current_user+'/'+books_owners[i]+'/'+books_titles[i])
-                        button.btn.btn-default.trade-btn trade
+   div
+      h2(style='text-align:center') All books
+    div.container
+       - if (books.length)
+       -for (var i = 0; i < books.length; i++)
+                div.book
+                   img(src= books[i])
+                   - if (books_owners[i]!=current_user)
+                        a(href='/trade/'+current_user+'/'+books_owners[i]+'/'+books_titles[i])
+                            button.btn.btn-default.trade-btn trade
 
 

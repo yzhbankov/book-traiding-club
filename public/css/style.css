@@ -17,17 +17,27 @@ body {
     text-align: center;
     padding-top: 40px;
 }
-
+.section-title{
+    font-size: 50px;
+    margin-left: 20%;
+    margin-top: 100px;
+    margin-bottom: 50px;
+}
+.features{
+    border-width: 0;
+    color: #007bb6;
+    font-size: 20px;
+}
 .footer {
     text-align: center;
-    position: fixed;
-    bottom: 10px;
+    position: relative;
+    margin-top: 50px;
 }
 
 .signup {
-    margin-top: 50px;
+    margin-top: 60px;
     text-align: center;
-    width:600px
+    width:600px;
 }
 .signup button{
     width:400px
@@ -35,6 +45,30 @@ body {
 
 .signup-title {
     text-align: center;
+}
+.book{
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.trade-btn{
+    font-size: 13px;
+    margin-left: -55px;
+    position: absolute;
+    float: right;
+}
+.center{
+    text-align: center;
+}
+.tradeRequest{
+margin-right: 10px;
+}
+.tradeContainer{
+    margin-top: 20px;
+}
+.signinfield{
+    margin-bottom: 40px;
+    margin-top: 20px;
 }
 .options-submit{
     text-align: center;
