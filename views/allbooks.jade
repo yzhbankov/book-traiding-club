@@ -12,4 +12,7 @@ block append content
             div.col-md-2
                img(src= books[i])
                - if (books_owners[i]!=current_user)
-                    button.btn.btn-default trade
+                    a(href='/trade/'+current_user+'/'+books_owners[i]+'/'+books_titles[i])
+                        button.btn.btn-default.trade-btn trade
+
+

@@ -11,8 +11,7 @@ var session = require('express-session');
 var https = require('https');
 
 app.use("/", express.static('public'));
-app.use("/dashboard", express.static('public'));
-app.use("/poll", express.static('public'));
+app.use("/gettradeinfo", express.static('public'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({secret: "secretword", resave: false, saveUninitialized: true}));
 app.set('views', __dirname + '/views');
@@ -247,7 +246,78 @@ app.get('/delete/:booktitle', function (req, res) {
         res.redirect('/mybooks');
     });
 });
+app.get('/trade/:from/:to/:title', function (req, res) {
+    var from = req.params.from;
+    var to = req.params.to;
+    var title = req.params.title;
+    if (!req.session.user) {
+        res.redirect('/');
+    } else {
+        MongoClient.connect(url, function (err, db) {
+            db.collection('trades').findOne({
+                "from": from,
+                "to": to,
+                "title": title
+            }, function (err, item) {
+                if (item) {
+                    db.close();
+                    console.log("book already trade");
+                } else {
+                    db.collection('trades').insertOne({
+                        "from": from,
+                        "to": to,
+                        "title": title
+                    }, function (err, result) {
+                        if (!err) {
+                            console.log("book trdade successfuly");
+                        }
+                    });
+                    db.close();
+                }
+            });
+        });
+        res.redirect('/allbooks');
+    }
+});
+app.get('/gettradeinfo/:from', function (req, res) {
+    var from = req.session.user;
 
+    MongoClient.connect(url, function (err, db) {
+        var resent = db.collection('trades').find({"from": from}, {
+            'from': true,
+            "to": true,
+            'title': true
+        }).toArray(function (err, result) {
+            if (result.length < 1) {
+                console.log('no trades found');
+                res.render('mytrades.jade', {"trades": []});
+            } else {
+                console.log('trades found');
+                var tradesTo = [];
+                var titles = [];
+                for (var i = 0; i < result.length; i++) {
+                    tradesTo.push(result[i].to);
+                    titles.push(result[i].title);
+                }
+                res.render('mytrades.jade', {
+                    "tradesTo": tradesTo,
+                    "titles": titles
+                });
+            }
+        });
+        db.close();
+    });
+});
+app.get('/deletetrade/:title/:to', function(req, res){
+    var title = req.params.title;
+    var user = req. session.user;
+    var to = req.params.to;
+    MongoClient.connect(url, function (err, db) {
+        db.collection('trades').remove({"from": user, "to": to, "title":title});
+        db.close();
+        res.redirect('/gettradeinfo/' + user);
+    });
+});
 app.listen(process.env.PORT || 3000, function () {
     console.log('Listening port 3000');
 });

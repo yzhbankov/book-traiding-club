@@ -1,0 +1,16 @@
+//
+   Created by Владелец on 24.12.2016.
+
+doctype html
+extends ./index.jade
+block append content
+    h2 Your trades
+    div.container.signup
+       div.options-submit.row
+             - if (tradesTo.length)
+             -for (var i = 0; i < tradesTo.length; i++)
+                div.col-md-2=titles[i]
+                a(href="/deletetrade/"+titles[i]+'/'+tradesTo[i])
+                    button.btn.btn-default.delete Delete
+
+script(src="js/tradeDelete.js" type='text/javascript')

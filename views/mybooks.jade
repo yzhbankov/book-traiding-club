@@ -7,6 +7,12 @@ block append content
    div.container.signup
       h2 User: #{title}
       //h2 Polls: #{polls}
+    a(href='/gettradeinfo/'+title)
+        button.btn.btn-default.yourTradeRequest Your trade requests
+    a(href='/gettradeinfo/'+title)
+        button.btn.btn-default.tradeRequestFor Trade requests for you
+
+    div.tradeContainer
     form(action="/add" method="POST")
         div.form-group
             label(for="title") Title:
@@ -19,3 +25,5 @@ block append content
                img(src= books[i])
                a(href="/delete/"+books_titles[i])
                   button.btn.btn-default Delete
+
+
