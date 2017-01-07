@@ -5,8 +5,8 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
-//var url = 'mongodb://yzhbankov:password1360@ds145208.mlab.com:45208/heroku_8k6sbvf2';
-var url = 'mongodb://localhost:27017/book_club';
+var url = 'mongodb://yzhbankov:password1360@ds157248.mlab.com:57248/heroku_8l7mbnvd';
+//var url = 'mongodb://localhost:27017/book_club';
 var session = require('express-session');
 var https = require('https');
 
