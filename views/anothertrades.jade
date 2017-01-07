@@ -10,7 +10,7 @@ block append content
              - if (tradesFrom.length)
              -for (var i = 0; i < tradesFrom.length; i++)
                 div.col-md-2=titles[i] + ' from ' + tradesFrom[i]
-                a(href="/deletetrade/"+titles[i]+'/'+tradesFrom[i])
+                a(href="/deleteanothertrade/"+titles[i]+'/'+tradesFrom[i])
                     button.btn.btn-default.delete Delete
                 a(href="/approvetrade/"+titles[i]+'/'+tradesFrom[i])
                     button.btn.btn-default.delete Approve

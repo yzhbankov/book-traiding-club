@@ -330,6 +330,7 @@ app.get('/gettraderequestinfo/:to', function (req, res) {
                     titles.push(result[i].title);
                 }
                 res.render('anothertrades.jade', {
+                    "user":user,
                     "tradesFrom": tradesFrom,
                     "titles": titles
                 });
@@ -348,6 +349,18 @@ app.get('/deletetrade/:title/:to', function(req, res){
         res.redirect('/gettradeinfo/' + user);
     });
 });
+
+app.get('/deleteanothertrade/:title/:from', function(req, res){
+    var title = req.params.title;
+    var user = req. session.user;
+    var from = req.params.from;
+    MongoClient.connect(url, function (err, db) {
+        db.collection('trades').remove({"from": from, "to": user, "title":title});
+        db.close();
+        res.redirect('/gettraderequestinfo/' + user);
+    });
+});
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('Listening port 3000');
 });
