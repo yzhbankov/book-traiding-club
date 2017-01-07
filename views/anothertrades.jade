@@ -1,0 +1,18 @@
+//
+   Created by Владелец on 24.12.2016.
+
+doctype html
+extends ./index.jade
+block append content
+    h2 Trades for You
+    div.container.signup
+       div.options-submit.row
+             - if (tradesFrom.length)
+             -for (var i = 0; i < tradesFrom.length; i++)
+                div.col-md-2=titles[i] + ' from ' + tradesFrom[i]
+                a(href="/deletetrade/"+titles[i]+'/'+tradesFrom[i])
+                    button.btn.btn-default.delete Delete
+                a(href="/approvetrade/"+titles[i]+'/'+tradesFrom[i])
+                    button.btn.btn-default.delete Approve
+
+script(src="js/tradeDelete.js" type='text/javascript')

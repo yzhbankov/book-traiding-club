@@ -12,6 +12,7 @@ var https = require('https');
 
 app.use("/", express.static('public'));
 app.use("/gettradeinfo", express.static('public'));
+app.use("/gettraderequestinfo", express.static('public'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({secret: "secretword", resave: false, saveUninitialized: true}));
 app.set('views', __dirname + '/views');
@@ -290,7 +291,7 @@ app.get('/gettradeinfo/:from', function (req, res) {
         }).toArray(function (err, result) {
             if (result.length < 1) {
                 console.log('no trades found');
-                res.render('mytrades.jade', {"trades": []});
+                res.render('mytrades.jade', {"tradesTo": []});
             } else {
                 console.log('trades found');
                 var tradesTo = [];
@@ -301,6 +302,35 @@ app.get('/gettradeinfo/:from', function (req, res) {
                 }
                 res.render('mytrades.jade', {
                     "tradesTo": tradesTo,
+                    "titles": titles
+                });
+            }
+        });
+        db.close();
+    });
+});
+app.get('/gettraderequestinfo/:to', function (req, res) {
+    var user = req.session.user;
+
+    MongoClient.connect(url, function (err, db) {
+        var resent = db.collection('trades').find({"to": user}, {
+            'from': true,
+            "to": true,
+            'title': true
+        }).toArray(function (err, result) {
+            if (result.length < 1) {
+                console.log('no trade requests found');
+                res.render('anothertrades.jade', {"tradesFrom": []});
+            } else {
+                console.log('trades found');
+                var tradesFrom = [];
+                var titles = [];
+                for (var i = 0; i < result.length; i++) {
+                    tradesFrom.push(result[i].from);
+                    titles.push(result[i].title);
+                }
+                res.render('anothertrades.jade', {
+                    "tradesFrom": tradesFrom,
                     "titles": titles
                 });
             }
