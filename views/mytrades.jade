@@ -12,5 +12,6 @@ block append content
                 div.col-md-2=titles[i]
                 a(href="/deletetrade/"+titles[i]+'/'+tradesTo[i])
                     button.btn.btn-default.delete Delete
-
+                - if (approve[i])
+                    div approved
 script(src="js/tradeDelete.js" type='text/javascript')

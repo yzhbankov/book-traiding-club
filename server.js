@@ -247,6 +247,7 @@ app.get('/delete/:booktitle', function (req, res) {
         res.redirect('/mybooks');
     });
 });
+
 app.get('/trade/:from/:to/:title', function (req, res) {
     var from = req.params.from;
     var to = req.params.to;
@@ -267,7 +268,8 @@ app.get('/trade/:from/:to/:title', function (req, res) {
                     db.collection('trades').insertOne({
                         "from": from,
                         "to": to,
-                        "title": title
+                        "title": title,
+                        "approve": false
                     }, function (err, result) {
                         if (!err) {
                             console.log("book trdade successfuly");
@@ -280,6 +282,7 @@ app.get('/trade/:from/:to/:title', function (req, res) {
         res.redirect('/allbooks');
     }
 });
+
 app.get('/gettradeinfo/:from', function (req, res) {
     var from = req.session.user;
 
@@ -287,7 +290,8 @@ app.get('/gettradeinfo/:from', function (req, res) {
         var resent = db.collection('trades').find({"from": from}, {
             'from': true,
             "to": true,
-            'title': true
+            'title': true,
+            "approve": true
         }).toArray(function (err, result) {
             if (result.length < 1) {
                 console.log('no trades found');
@@ -296,19 +300,23 @@ app.get('/gettradeinfo/:from', function (req, res) {
                 console.log('trades found');
                 var tradesTo = [];
                 var titles = [];
+                var approve = [];
                 for (var i = 0; i < result.length; i++) {
                     tradesTo.push(result[i].to);
                     titles.push(result[i].title);
+                    approve.push(result[i].approve);
                 }
                 res.render('mytrades.jade', {
                     "tradesTo": tradesTo,
-                    "titles": titles
+                    "titles": titles,
+                    "approve":approve
                 });
             }
         });
         db.close();
     });
 });
+
 app.get('/gettraderequestinfo/:to', function (req, res) {
     var user = req.session.user;
 
@@ -316,7 +324,8 @@ app.get('/gettraderequestinfo/:to', function (req, res) {
         var resent = db.collection('trades').find({"to": user}, {
             'from': true,
             "to": true,
-            'title': true
+            'title': true,
+            "approve": true
         }).toArray(function (err, result) {
             if (result.length < 1) {
                 console.log('no trade requests found');
@@ -325,20 +334,24 @@ app.get('/gettraderequestinfo/:to', function (req, res) {
                 console.log('trades found');
                 var tradesFrom = [];
                 var titles = [];
+                var approve = [];
                 for (var i = 0; i < result.length; i++) {
                     tradesFrom.push(result[i].from);
                     titles.push(result[i].title);
+                    approve.push(result[i].approve);
                 }
                 res.render('anothertrades.jade', {
                     "user":user,
                     "tradesFrom": tradesFrom,
-                    "titles": titles
+                    "titles": titles,
+                    "approve":approve
                 });
             }
         });
         db.close();
     });
 });
+
 app.get('/deletetrade/:title/:to', function(req, res){
     var title = req.params.title;
     var user = req. session.user;
@@ -361,6 +374,20 @@ app.get('/deleteanothertrade/:title/:from', function(req, res){
     });
 });
 
+app.get('/approvetrade/:title/:from/:to', function(req, res){
+    var title = req.params.title;
+    var from = req.params.from;
+    var to = req.params.to;
+
+    MongoClient.connect(url, function (err, db) {
+        db.collection('trades').update({"from": from, "to":to, "title": title},
+            {"$set": {"approve": true}}, function (err, doc) {
+                res.redirect('/gettraderequestinfo/' + req.session.user);
+                db.close();
+                console.log('trade request approved');
+            });
+    });
+});
 app.listen(process.env.PORT || 3000, function () {
     console.log('Listening port 3000');
 });
